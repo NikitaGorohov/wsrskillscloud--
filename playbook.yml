@@ -1,0 +1,106 @@
+#Basic conf
+---
+- hosts: Comp
+
+  tasks:
+          - name: Upgrade
+            apt: only_upgrade=yes  
+                   
+          - name: Curl
+            apt: pkg={{'curl'}} state=latest
+            
+          - name: UFW
+            ufw: 
+                rule: allow
+                port: 80
+                proto: tcp
+                state: enabled
+
+          - name: UFW2
+            ufw:
+                 rule: allow
+                 port: 8080
+                 proto: tcp
+                 state: enabled
+
+          - name: UFW3
+            ufw:
+                 rule: allow
+                 port: 1834 
+                 proto: tcp
+                 state: enabled    
+
+          - name: Allow SSH
+            ufw:
+                  rule: allow 
+                  proto: tcp
+                  port: 1834
+         
+          - name:  SSH port 
+            lineinfile: 
+               dest: "/etc/ssh/sshd_config"
+               regexp: "^Port"
+               line: "Port 1834"
+
+          - name: Restart sshd
+            service:
+                name: sshd 
+                state: restarted
+
+- hosts: Comp
+
+  tasks:
+          - name: Change port 
+            set_fact: 
+                ansible_port: 1834
+          
+          - name: Set Policy
+            ufw: 
+                  state: enabled 
+                  policy: reject 
+            become: true    
+
+- hosts: P1
+
+  tasks: 
+        - name: Creating user
+          user: 
+                name: Webdeveloper 
+                password: S52we9V6QTp7
+                state: present
+- hosts: P2
+  
+  tasks: 
+        - name: Creating user
+          user: 
+                name: Devopsengineer  
+                password: dHy6sKGHsj2T
+                state: present
+
+- hosts: P3
+  
+  tasks: 
+        - name: Creating user 
+          user: 
+                name: Projectmanager
+                password: oP92ugMSaCbe
+                state: present
+
+
+                #- hosts: Comp
+
+  # tasks: 
+  # - name: Install Docker help
+          # apt: name={{ item }} state=latest update_cahce=yes
+          # loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common'. 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+          # - name: Install Docker
+          # apt_key:
+                  #url: https://download.docker.com/linux/ubuntu/gpg
+                  #state: present
+
+                  #- name: Add Docker Repo
+          #apt_repository: 
+          #            repo: deb https://download.docker.com/linux.ubuntu bionic stable         
+                  
+         
